@@ -51,10 +51,9 @@ def add_header(response):
 ### App routes
 @app.route("/")
 def index():
-  shutil.copy(IMGPATH, STATICPATH)
-  styles = [f for f in os.listdir(STYPATH) if f.split(".")[-1] == "t7"]
-  upload_names = os.listdir(app.config['UPLOAD_FOLDER'])
-  return render_template("index.html", links = product(upload_names, styles))
+  with open("templates/index.html") as f:
+    content = f.read()
+  return content
 
 @app.route("/combine/")
 def combine():
@@ -138,20 +137,19 @@ def load_url():
     return "Pass a url and uid parameter"
   resp = requests.get(url)
   img = resp.content
-  filename = "raw.jpg"
+  filename = "raw.png"
   freldir = os.path.join(uid, filename)
   try:
     os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], uid))
   except OSError:
-    pass
+    return "Already exists"
 
   with open(os.path.join(app.config['UPLOAD_FOLDER'], freldir), 'wb') as f:
     f.write(img)
     command = '{} {}'.format(APPLY_FILTERS_PATH, uid)
     commands.getstatusoutput(command)
-    
-  newurl = url_for('combine') + '?' + urllib.urlencode({'img': freldir, 'sty': 'mosaic.t7'})
-  return redirect(newurl)
+  
+  return "Success" 
   
   
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
-<base href="http://upstyle.byron.io/emily/" />
+<base href="http://tapioca.byron.io/emily/" />
 
 	<meta content="charset=utf-8">
-	<title>Upstyle</title>
+	<title>Tapioca</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
   <!-- Syntax Highlighter -->
@@ -13,8 +13,30 @@
   <!-- Demo CSS -->
 	<link rel="stylesheet" href="css/demo.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="flexslider.css" type="text/css" media="screen" />
+	<style type="text/css" media="screen, print">
+	  @font-face {
+	    font-family: "bobbleboddy";
+	    src: url("http://tapioca.byron.io/static/fonts/bobbleboddy.ttf")
+	  }
+	#loading-img {
+	    background: url("https://s-media-cache-ak0.pinimg.com/originals/a7/2f/fd/a72ffd6fe16417fabd51b58f61f40341.gif") center center no-repeat;
+	    height: 100%;
+	    z-index: 20;
+	}
+
+	.overlay {
+	    background: #e9e9e9;
+	    display: none;
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    opacity: 0.5;
+	}
+	</style>
 </head>
-<body onload="myFunction()" style="margin:0;">
+<body style="margin:0; font-family:bobbleboddy, arial, sans-serif" class="loading">
 <script>
   // This is called with the results from from FB.getLoginStatus().
   function statusChangeCallback(response) {
@@ -90,28 +112,56 @@
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
       console.log('Successful login for: ' + response.name);
+      console.log(response.id)
       FB.api(
             //"/" + response.id + "/picture?height=1000&width=1000",
-            "/me?fields=cover",
+ //           "/me?fields=cover",
+            "/" + response.id + "/picture?width=9999",
             function (response1) {
               if (response1 && !response1.error) {
                 /* handle the result */
-                var url = "http://upstyle.byron.io/urlload?url=" + encodeURIComponent(response1.cover.source)
+                //var url = "http://tapioca.byron.io/urlload?url=" + encodeURIComponent(response1.cover.source)
+                var url = "http://tapioca.byron.io/urlload?url=" + encodeURIComponent(response1.data.url)
                 url = url + "&userid=" + encodeURIComponent(response.id)
                 window.USERID = response.id
-                fetch(url).then(function (resp) {windowReadyCallback()})
+                fetch(url)
+		.then(function() {
+			$(".overlay").hide();
+		});
+                windowReadyCallback()
               }
             }
         );
     });
   }
-  function setCoverPhoto() {
+
+  function postToTimeline() {
+	i = $('#slider').data('flexslider').currentSlide
+        url = $('#i'+(i+1))[0].attributes['src'].value
         FB.api(
             "/me/photos",
             "POST",
             {
-                "url": "http://upstyle.byron.io/uploads/" + window.USERID + "/mosaic.png",
-                "caption": "Created by Upstyle -- http://upstyle.byron.io"
+                "url": url,
+                "caption": "Created by tapioca  -- http://tapioca.byron.io"
+            },
+            function (response) {
+               if (response && !response.error) {
+                window.open("http://www.facebook.com/profile.php")
+	      }
+            }
+        );
+  }
+
+  function setCoverPhoto() {
+        i = $('#slider').data('flexslider').currentSlide
+        url = $('#i'+(i+1))[0].attributes['src'].value
+        FB.api(
+            "/me/photos",
+            "POST",
+            {
+                "url": url,
+                "caption": "Created by tapioca -- http://tapioca.byron.io"
             },
             function (response) {
               if (response && !response.error) {
@@ -121,16 +171,34 @@
         );
 
  }
+ /*document.on('touchmove', function(e) {
+
+    var xStart, yStart = 0;
+
+    xStart = e.touches[0].screenX;
+    yStart = e.touches[0].screenY;
+
+    var xMovement = Math.abs(e.touches[0].screenX - xStart);
+    var yMovement = Math.abs(e.touches[0].screenY - yStart);
+    if ((xMovement * 3) > yMovement) {
+            e.preventDefault();
+        }
+
+})*/
 
 function windowReadyCallback() {
-  document.getElementById("i1").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/raw.jpg"
-  document.getElementById("i2").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/feathers.png"
-  document.getElementById("i3").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/mosaic.png"
-  document.getElementById("i4").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/candy.png"
-  document.getElementById("j1").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/raw.jpg"
-  document.getElementById("j2").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/feathers.png"
-  document.getElementById("j3").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/mosaic.png"
-  document.getElementById("j4").src = "http://upstyle.byron.io/uploads/" + window.USERID + "/candy.png"
+  document.getElementById("i1").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/raw.png"
+  document.getElementById("i2").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/feathers.png"
+  document.getElementById("i3").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/mosaic.png"
+  document.getElementById("i4").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/candy.png"
+  document.getElementById("j1").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/raw.png"
+  document.getElementById("j2").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/feathers.png"
+  document.getElementById("j3").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/mosaic.png"
+  document.getElementById("j4").src = "http://tapioca.byron.io/uploads/" + window.USERID + "/candy.png"
+  $('#fblogin').hide()
+  $('#posttotimeline').show()
+  $('#setcoverphoto').show()
+  $(".overlay").show();
 }
 
   function reloadImage(img) {
@@ -138,55 +206,62 @@ function windowReadyCallback() {
   }
   </script>
 
-  <div id="container" class="cf">
-    <header>
-      <h1>upstyle</h1>
+  <div id="container" class="cf" style="max-width:600px; margin-left:auto; margin-right:auto;">
+    <header style="font-align:left;position:absolute;top:3px;left:60px;width: auto;">
+      <h1 style="font-family:bobbleboddy;z-index:10;">tapioca</h1>
     </header>
+	<img src="https://scontent-lga3-1.xx.fbcdn.net/v/t34.0-12/15045681_1843389779275050_2035899055_n.png?oh=5d62eca5c26a87c18d3dc4e91682f8d6&oe=5829BDFA" style="position:absolute;top:10px;left:10px; height:20%;" />
     <div class="loader"></div>
-    <div id="main" role="main">
+    <div id="main" role="main" style="width:85%; max-width:800px;">
       <section class="slider">
-        <div id="slider" class="flexslider">
+        <div id="slider" class="flexslider" style="margin:0 0 30px">
+          <fb:login-button id="fblogin" scope="public_profile,email,user_photos,publish_actions" onlogin="checkLoginState();" data-size="large" style="position:absolute;top:0;right:0;z-index:10"> Style YOUR Photo </fb:login-button>
+          <ul class="slides">
+            <li style= "width:80%; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="i1" src="http://tapioca.byron.io/uploads/1/raw.jpg" onError="reloadImage(this)" />
+            </li>
 
-          <ul class="slides">
+            <li style= "width:80%; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="i2" src="http://tapioca.byron.io/uploads/1/feathers.png"  onError="reloadImage(this)" />
+            </li>
+
             <li style= " width:80%; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="i1" src="http://upstyle.byron.io/uploads/1843170215963673/raw.jpg" onError="reloadImage(this)" />
+              <img id="i3" src="http://tapioca.byron.io/uploads/1/mosaic.png"  onError="reloadImage(this)" />
             </li>
-            <li style= " height:350px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="i2" src="images/donut.jpg" />
-            </li>
+
             <li style= " width:80%; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="i3" src="http://upstyle.byron.io/uploads/1843170215963673/mosaic.png"  onError="reloadImage(this)" />
-            </li>
-            <li style= " width:80%; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="i4" src="http://upstyle.byron.io/uploads/1843170215963673/candy.png"  onError="reloadImage(this)" />
-            </li>
-          </ul>
-        </div>
-        <button type="button" class="btn btn-primary btn-lg" onclick="setCoverPhoto()">Set as cover photo</button>
-        <fb:login-button scope="public_profile,email,user_photos,publish_actions" onlogin="checkLoginState();">
-Log in with Facebook to style YOUR cover photo</fb:login-button>
-        <div id="carousel" class="flexslider">
-          <ul class="slides">
-            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="j1" src="http://upstyle.byron.io/uploads/1/raw.jpg" onError="reloadImage(this)"/>
-            </li>
-            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="j2" src="http://upstyle.byron.io/uploads/1/feathers.png" onError="reloadImage(this)"/>
-            </li>
-            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="j3" src="http://upstyle.byron.io/uploads/1/mosaic.png"  onError="reloadImage(this)"/>
-            </li>
-            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
-              <img id="j4" src="http://upstyle.byron.io/uploads/1/candy.png"  onError="reloadImage(this)"/>
+              <img id="i4" src="http://tapioca.byron.io/uploads/1/candy.png"  onError="reloadImage(this)" />
             </li>
           </ul>
         </div>
       </section>
+      <section class="carousel" style="margin-bottom:-30px">
+        <div id="carousel" class="flexslider">
+          <ul class="slides">
+            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="j1" style="height:150px;width:auto" src="http://tapioca.byron.io/uploads/1/raw.jpg" onError="reloadImage(this)"/>
+            </li>
+            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="j2" style="height:150px;width:auto" src="http://tapioca.byron.io/uploads/1/feathers.png" onError="reloadImage(this)"/>
+            </li>
+            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="j3" style="height:150px;width:auto" src="http://tapioca.byron.io/uploads/1/mosaic.png"  onError="reloadImage(this)"/>
+            </li>
+            <li style= " height:150px; background-image:url('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif'); background-size:cover; background-position:center center;">
+              <img id="j4" style="height:150px;width:auto"  src="http://tapioca.byron.io/uploads/1/candy.png"  onError="reloadImage(this)"/>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <button type="button" class="btn btn-primary btn-lg" id="setcoverphoto" onclick="setCoverPhoto()" style="width:40%; display:none">Set as cover photo</button>
+      <button type="button" class="btn btn-primary btn-lg" id="posttotimeline" onclick="postToTimeline()" style="width:40%; display:none">Post to timeline</button>
       
     </div>
 
   </div>
-
+	<div class="overlay">
+	    <div id="loading-img"></div>
+	</div>
   <!-- jQuery -->
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.min.js">\x3C/script>')</script>
